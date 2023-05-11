@@ -1,6 +1,6 @@
 import os
+import time
 from urllib.parse import urlparse, urljoin
-import pdftotext
 import requests
 import tiktoken
 import pinecone
@@ -8,8 +8,7 @@ from bs4 import BeautifulSoup
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from haystack import Document
-from haystack.nodes import (PreProcessor, PDFToTextConverter, TextConverter, DocxToTextConverter)
-from haystack.utils import convert_files_to_docs
+from haystack.nodes import (PreProcessor, PDFToTextConverter)
 
 
 # find API key in console at app.pinecone.io
@@ -17,7 +16,7 @@ PINECONE_API_KEY = ''
 # find ENV (cloud region) next to API key in console
 PINECONE_ENV = 'us-west1-gcp'
 
-INDEX_NAME = 'haystack'
+INDEX_NAME = 'medicare'
 
 
 
@@ -128,22 +127,34 @@ def tiktoken_len(text):
     return len(tokens)
 
 
-def initialize_index(PINECONE_API_KEY, PINECONE_ENV, INDEX_NAME):
-    index_name = 'langchain-retrieval-augmentation'
+def initialize_index(PINECONE_API_KEY, PINECONE_ENV, index_name) -> pinecone.Index: 
+    index_name = index_name
     pinecone.init(
-    api_key=YOUR_API_KEY,
-    environment=YOUR_ENV
+    api_key=PINECONE_API_KEY,
+    environment=PINECONE_ENV
 )
 
     if index_name not in pinecone.list_indexes():
     # we create a new index
         pinecone.create_index(
-        name=INDEX_NAME,
+        name=index_name,
         metric='dotproduct',
         dimension=1536  # 1536 dim of text-embedding-ada-002
     )
+    # connect to the index    
+    index = pinecone.GRPCIndex(index_name)
+    # get index info
+    # print(index.describe_index_stats())
+    return index
 
-initialize_index(PINECONE_API_KEY, PINECONE_ENV, INDEX_NAME)
+
+doc_store = initialize_index(PINECONE_API_KEY, PINECONE_ENV, 'medicare')
+
+
+# upsert the data document to pinecone index
+document_store.write_documents(docs)
+
+
 
 
 
