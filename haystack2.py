@@ -89,7 +89,7 @@ def process_files(file_path, preprocessor):
     Tokenizes the text content of the files in the input directory and saves them to a local text file with the same name as the file.
     """
     converter = PDFToTextConverter(
-        remove_numeric_tables=True, valid_languages=["en"])
+        remove_numeric_tables=True)
 
           
     if ((os.path.isfile(file_path)) and (file_path.endswith(".pdf"))):
