@@ -1,0 +1,4 @@
+langchain
+openai
+pinecone-client==2.2.1
+watchdog==3.0.0

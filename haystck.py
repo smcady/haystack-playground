@@ -17,7 +17,7 @@ from haystack.utils import convert_files_to_docs
 # https://www.medicare.gov/publications/10050-Medicare-and-You.pdf
 
 
-def preprocess_url(url, output_dir):
+def process_url(url, output_dir):
     """
     Downloads the content of the URL, preprocesses it, and saves it to a local text file with the same name as the URL.
     """
@@ -54,7 +54,7 @@ def preprocess_url(url, output_dir):
             f.write(str(tokenized_sentences[i].to_json()))
 
 
-def preprocess_files(input_dir, output_dir):
+def process_files(input_dir):
     """
     Tokenizes the text content of the files in the input directory and saves them to a local text file with the same name as the file.
     """
@@ -84,7 +84,7 @@ def traverse_urls(start_url, output_dir, max_depth=1, current_depth=0):
     Traverses the child URLs of the start_url up to max_depth and saves their content to a local text file with the same name as the URL.
     """
     # Process the start_url
-    preprocess_url(start_url, output_dir)
+    process_url(start_url, output_dir)
 
     # Traverse the child URLs up to max_depth
     if current_depth < max_depth:
@@ -108,8 +108,8 @@ def main():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # traverse_urls(start_url, output_dir, max_depth)
-    preprocess_files(input_dir, output_dir)
+    # traverse_urls(start_url, max_depth)
+    process_files(input_dir)
 
 
 if __name__ == "__main__":
